@@ -1,0 +1,45 @@
+# Pipeline'in adi. GitHub'daki "Actions" sekmesinde bu isimle gorunur.
+name: Simple CI Pipeline
+
+# NE ZAMAN calisacak? (tetikleyiciler)
+on:
+  push:
+    branches: [ "main", "feature/**" ]   # main'e VE feature/ ile baslayan branch'lere push
+  pull_request:
+    branches: [ "main" ]                 # main'e acilan Pull Request'lerde
+  workflow_dispatch:                     # Actions sekmesinden elle "Run workflow" butonu
+
+jobs:
+  # ---------- CI: Kontrol / test asamasi ----------
+  build-and-test:
+    runs-on: ubuntu-latest   # GitHub'in verdigi gecici bir Linux makinede calis
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5          # Repodaki dosyalari bu makineye indir
+
+      - name: List Files
+        run: ls -la                        # Dosyalar gercekten inmis mi, gorelim
+
+      - name: Lint Markdown Files
+        uses: DavidAnson/markdownlint-cli2-action@v23   # Hazir Markdown kontrol araci
+        with:
+          globs: '**/*.md'                 # Repodaki TUM .md dosyalarini kontrol et
+
+      - name: Jira Notification / Status Update
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          echo "Branch: $BRANCH_NAME"
+          echo "Commit mesaji: $COMMIT_MSG"
+          echo "Jira anahtari branch/commit icinde oldugu icin bu build Jira kartina baglanacak."
+
+  # ---------- CD: Dagitim asamasi (simulasyon) ----------
+  deploy:
+    needs: build-and-test                  # Once test isi BASARILI bitmeli
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'   # Sadece main'e push'ta
+    runs-on: ubuntu-latest
+    environment: production                # GitHub bunu bir "deployment" olarak kaydeder -> Jira'da Deployments
+    steps:
+      - name: Fake Deploy
+        run: echo "Uygulama production ortamina deploy edildi (simulasyon)."
