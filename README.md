@@ -18,6 +18,5 @@ CI/CD pipeline'ini gostermek icin olusturuldu.
 5. Jira, commit, branch, PR ve build durumunu `KAN-4` kartinda gosterir.
 
 ## Degisiklik Gecmisi
-
 - Ilk surum olusturuldu.
 - KAN-4: Dokumantasyon guncellendi, CI/CD testi yapildi.
