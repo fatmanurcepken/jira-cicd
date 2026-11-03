@@ -20,3 +20,4 @@ CI/CD pipeline'ini gostermek icin olusturuldu.
 ## Degisiklik Gecmisi
 
 - Ilk surum olusturuldu.
+- KAN-4: Dokumantasyon guncellendi, CI/CD testi yapildi.
